@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "580617229078",
+    "project_id": "hey-there-10aab",
+    "storage_bucket": "hey-there-10aab.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:580617229078:android:b545dfb62d5705124df637",
+        "android_client_info": {
+          "package_name": "com.hey"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "580617229078-bmiocc7mnj9s3htpnt473i6ad7amnnrr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-GbekjdkbAHSAdrHz74Kj_cslkI5TznY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "580617229078-bmiocc7mnj9s3htpnt473i6ad7amnnrr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "580617229078-p10de3febbfbsacmhpk9n8dutqrtio3q.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.Hey"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
