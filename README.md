@@ -1,6 +1,5 @@
-<<<<<<< HEAD
-# HeyThere
-=======
+
+
 # Hey_There
 “Hey There” is a 1:1 React Native messenger application library where people can chat with those who are in a 1 km radius.
 
@@ -15,4 +14,4 @@ The user will select the other user on the map and engage in the chat screen.
 
 Functions or methods need to be provided for react native to inject users and send and receive messages
 
->>>>>>> 9bce946 (fix:issue)
+
