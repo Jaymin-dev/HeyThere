@@ -22,6 +22,19 @@ const ChatScreen = ({route}) => {
   const [contactListSearch, setContactListSerch] = useState([]);
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
+  const updateLastMessage = async () => {
+    if (messages.length) {
+      const userCollection = firestore().collection('Users');
+      userCollection.doc(userId).update({
+        timeStemp: messages[messages.length - 1]?.createdAt,
+        messages: messages[messages.length - 1]?.text,
+      });
+      userCollection.doc(currentUserData.userId).update({
+        timeStemp: messages[messages.length - 1]?.createdAt,
+        messages: messages[messages.length - 1]?.text,
+      });
+    }
+  };
 
   useEffect(() => {
     const subscriber = firestore()
@@ -29,7 +42,7 @@ const ChatScreen = ({route}) => {
       .doc(chatID)
       .onSnapshot(documentSnapshot => {
         setMessages(
-          [...(documentSnapshot.data()?.chats||[])].reverse()?.map(doc => ({
+          [...(documentSnapshot.data()?.chats || [])].reverse()?.map(doc => ({
             _id: doc._id,
             createdAt: doc.createdAt?.toDate(),
             text: doc.text,
@@ -41,7 +54,10 @@ const ChatScreen = ({route}) => {
           })),
         );
       });
-    return () => subscriber();
+    return () => {
+      subscriber();
+      updateLastMessage();
+    };
   }, []);
   const onSend = useCallback(async (messages = []) => {
     setMessages(previousMessages =>

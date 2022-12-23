@@ -7,7 +7,10 @@ const initialState = {
 export const SystemReducer = (state = initialState, action) => {
   switch (action.type) {
     case IS_PROCESSING_REQUEST:
-      return {...state, isProcessing: action.isProcessing};
+      return {
+        ...state,
+        isProcessing: action.payload.isProcessing || action.isProcessing,
+      };
     default:
       return state;
   }
