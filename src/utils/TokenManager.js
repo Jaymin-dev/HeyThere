@@ -88,6 +88,21 @@ const deleteUserId = () => {
   });
 };
 
+export const updateChatData = async (
+  collection,
+  userId,
+  chatIdArray = [],
+  chat_id,
+) => {
+  try {
+    await collection.doc(userId).update({
+      chatIdArray: [...chatIdArray, chat_id],
+    });
+  } catch (error) {
+    alert(error);
+  }
+};
+
 export default {
   saveToken,
   retrieveToken,
@@ -95,4 +110,5 @@ export default {
   saveUserId,
   retrieveUserId,
   deleteUserId,
+  updateChatData
 };

@@ -3,6 +3,8 @@ import React, {useEffect, useState} from 'react';
 import {FlatList, Image, TouchableOpacity, View, Text} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import dayjs from 'dayjs';
+import RelativeTime from 'dayjs/plugin/relativeTime'; // load on demand
 
 import {useDispatch, useSelector} from 'react-redux';
 
@@ -12,6 +14,8 @@ import {brandColors} from '../../components/Core/basicStyles';
 //redux
 
 import styles from './style';
+import {updateChatData} from '../../utils/TokenManager';
+dayjs.extend(RelativeTime);
 
 const ChatList = () => {
   const dispatch = useDispatch();
@@ -49,8 +53,10 @@ const ChatList = () => {
             return {
               name: `${doc.data()?.firstName}  ${doc.data()?.lastName}`,
               image: 'https://i.pravatar.cc/',
-              message: '',
-              timeStemp: '1d',
+              message: doc.data()?.messages,
+              timeStemp: dayjs(
+                new Date(doc.data()?.timeStemp?.toDate()) || new Date(),
+              ).fromNow(),
               _id: doc.data()?._id,
               userId: doc.data()?.userId,
               chatIdArray: doc.data()?.chatIdArray,
@@ -65,20 +71,7 @@ const ChatList = () => {
 
     return () => unsubscribe();
   }, []);
-  const updateChatData = async (
-    collection,
-    userId,
-    chatIdArray = [],
-    chat_id,
-  ) => {
-    try {
-      await collection.doc(userId).update({
-        chatIdArray: [...chatIdArray, chat_id],
-      });
-    } catch (error) {
-      alert(error);
-    }
-  };
+
   const chatIntialization = async (
     data,
     currentUserId,
@@ -141,8 +134,7 @@ const ChatList = () => {
     };
 
   const RenderCard = ({item, type}) => {
-    const {index, name, image, message, timeStemp} = item;
-
+    const {index, name, image, message = '', timeStemp} = item;
     return (
       <TouchableOpacity
         onPress={onPressHandler(item)}
@@ -157,7 +149,10 @@ const ChatList = () => {
                 {message}
               </Text>
               <Text
-                style={[styles.messageText, {color: brandColors.grayLighter}]}>
+                style={[
+                  styles.messageText,
+                  {color: brandColors.grayLighter, maxWidth: '100%'},
+                ]}>
                 {' · '}
                 {timeStemp}
               </Text>
@@ -167,6 +162,7 @@ const ChatList = () => {
       </TouchableOpacity>
     );
   };
+
   return (
     <BaseScreen title={'Messages'} icon>
       <FlatList

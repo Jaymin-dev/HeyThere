@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   messageText: {
-    maxWidth: '80%',
+    maxWidth: '60%',
     fontSize: fontScale(13),
     fontWeight: '400',
     color: brandColors.gray,

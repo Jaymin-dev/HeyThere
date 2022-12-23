@@ -1,7 +1,13 @@
 import {USER_LOGIN_REQUEST, RESET_FLAGS, LOGOUT} from '../reducers/reducer';
+import {IS_PROCESSING_REQUEST} from '../reducers/systemReducer';
 
 export const login = payload => ({
   type: USER_LOGIN_REQUEST,
+  payload,
+});
+
+export const setLoading = payload => ({
+  type: IS_PROCESSING_REQUEST,
   payload,
 });
 

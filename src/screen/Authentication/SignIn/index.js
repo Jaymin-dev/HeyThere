@@ -38,7 +38,7 @@ const SignIn = ({navigation}) => {
     auth()
       .signInWithEmailAndPassword(email, password)
       .then(() => {
-        alert('User account created & signed in!');
+        // alert('User account created & signed in!');
       })
       .catch(error => {
         alert(error);

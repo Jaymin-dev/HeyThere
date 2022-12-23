@@ -2,6 +2,7 @@
 #
 .DS_Store
 .env
+
 # Xcode
 #
 build/
@@ -27,7 +28,7 @@ build/
 .idea
 .gradle
 local.properties
-google-services.json
+/app/google-services.json
 *.iml
 *.hprof
 .cxx/
@@ -58,7 +59,6 @@ buck-out/
 
 # Bundle artifact
 *.jsbundle
-
 # Ruby / CocoaPods
 /ios/Pods/
 /vendor/bundle/
