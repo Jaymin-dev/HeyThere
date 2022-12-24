@@ -4,16 +4,22 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import auth from '@react-native-firebase/auth';
-
-import ProcessingWheel from './components/ProcessingWheel';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
-import {brandColors} from './components/Core/basicStyles';
+
+// Components
 import TabBar from './components/TabBar';
+import ProcessingWheel from './components/ProcessingWheel';
+
+// Core style and colors
+import {brandColors} from './components/Core/basicStyles';
+
+// Screens
 import ChatList from './screen/ChatList';
 import MapScreen from './screen/MapScreen';
 import ChatScreen from './screen/ChatScreen';
 import SignIn from './screen/Authentication/SignIn';
 import SignUp from './screen/Authentication/SignUp';
+import ForgotPassword from './screen/Authentication/ForgotPassword';
 
 const Stack = createStackNavigator();
 const AppBottomTab = createBottomTabNavigator();
@@ -40,6 +46,7 @@ function AuthStack() {
       }}>
       <Stack.Screen name="SignIn" component={SignIn} />
       <Stack.Screen name="SignUp" component={SignUp} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
     </Stack.Navigator>
   );
 }
@@ -80,11 +87,14 @@ const AppTabScreen = () => {
 
 const RootNavigator = () => {
   const {user, setUser} = useContext(AuthenticatedUserContext);
+
   const [isLoading, setIsLoading] = useState(false);
+
   function onAuthStateChanged(authenticatedUser) {
     authenticatedUser ? setUser(authenticatedUser) : setUser(null);
     setIsLoading(false);
   }
+
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount

@@ -1,5 +1,9 @@
 import {StyleSheet, StatusBar, Platform} from 'react-native';
-import {brandColors, verticalScale} from '../../components/Core/basicStyles';
+import {
+  brandColors,
+  horizontalScale,
+  verticalScale,
+} from '../../components/Core/basicStyles';
 
 const styles = StyleSheet.create({
   container: {
@@ -29,6 +33,21 @@ const styles = StyleSheet.create({
   },
   textInputContainer: {
     flexDirection: 'row',
+  },
+  toolKit: {
+    height: horizontalScale(40),
+    width: horizontalScale(40),
+    resizeMode: 'contain',
+    borderRadius: horizontalScale(50),
+    borderWidth: 2,
+    borderColor: brandColors.white,
+    shadowOffset: {
+      width: 5,
+      height: 4,
+    },
+    shadowOpacity: 1,
+    backgroundColor: 'white',
+    elevation: 10,
   },
   textInput: {
     backgroundColor: '#FFFFFF',

@@ -1,26 +1,17 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList, Image, TouchableOpacity, View, Text} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
-import {useDispatch, useSelector} from 'react-redux';
 import {GiftedChat} from 'react-native-gifted-chat';
 
+// Components
 import BaseScreen from '../../components/BaseScreen';
-import {brandColors} from '../../components/Core/basicStyles';
 
-//redux
-
+// Styles
 import styles from './style';
 
 const ChatScreen = ({route}) => {
   const {
-    params: {currentUserData = {}, chatID, userId},
+    params: {currentUserData = {}, chatID, userId, name},
   } = route;
-  const dispatch = useDispatch();
-  const [searchPatient, setSearchPatient] = useState();
-  const [contactList, setContactList] = useState([]);
-  const [contactListSearch, setContactListSerch] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const updateLastMessage = async () => {
     if (messages.length) {
@@ -67,7 +58,6 @@ const ChatScreen = ({route}) => {
     const activeChatCollection = firestore().collection('Chats').doc(chatID);
     const dataMessages = await (await activeChatCollection.get()).data();
     const previousMsg = dataMessages?.chats?.length ? dataMessages.chats : [];
-    console.log('activeChatCollesdscsdsdsdstsdisdon', dataMessages);
     try {
       activeChatCollection.set({
         chatID,
@@ -90,9 +80,9 @@ const ChatScreen = ({route}) => {
       alert(error);
     }
   }, []);
-  console.log('messages', messages);
+
   return (
-    <BaseScreen title={'Messages'} back>
+    <BaseScreen title={name} back>
       <GiftedChat
         messagesContainerStyle={styles.container}
         messages={messages}

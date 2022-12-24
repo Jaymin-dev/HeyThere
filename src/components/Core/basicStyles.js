@@ -45,6 +45,7 @@ export const brandColors = {
   grayLighter: '#8B8B8B',
   addSquareColor: '#FF6372',
   billColor: '#FEF7F2',
+  greenLight: 'rgba(1, 128, 128, 0.2)',
   warningColor: '#F8F3D6',
   warningTextColor: '#96722E',
   bottomColor: '#C5C6CC',

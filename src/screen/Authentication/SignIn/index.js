@@ -21,7 +21,7 @@ const SignIn = ({navigation}) => {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [showPassword, setShowPassword] = useState(true);
-  const [deviceToken, setDeviceToken] = useState();
+  const [loading, setLoading] = useState(false);
 
   const toggleShowPassword = () => setShowPassword(prev => !prev);
 
@@ -34,24 +34,17 @@ const SignIn = ({navigation}) => {
     } else if (password?.length < 8 || !password) {
       return alert(validator.password.error);
     }
-
+    setLoading(true);
     auth()
       .signInWithEmailAndPassword(email, password)
       .then(() => {
-        // alert('User account created & signed in!');
+        console.log('User signed in!');
       })
       .catch(error => {
         alert(error);
-        // if (error.code === 'auth/email-already-in-use') {
-        //   alert('That email address is already in use!');
-        // }
-
-        // if (error.code === 'auth/invalid-email') {
-        //   alert('That email address is invalid!');
-        // }
-
         console.error(error);
       });
+    setLoading(false);
   };
 
   const handleSignUpClick = () => navigation.navigate('SignUp');
@@ -95,6 +88,7 @@ const SignIn = ({navigation}) => {
 
       <View style={styles.buttonView}>
         <Button
+          disabled={loading}
           onClick={onLogin}
           text="SIGN IN"
           textStyle={styles.buttonText}

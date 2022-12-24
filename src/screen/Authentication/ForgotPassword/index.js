@@ -1,45 +1,35 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
+import auth from '@react-native-firebase/auth';
 
 //components
 import Input from '../../../components/Input';
 import Button from '../../../components/Button';
-import Utils from '../../../utils/Utils';
 import BaseScreen from '../../../components/BaseScreen';
 import validator from '../../../utils/validation';
-
-//redux
-import {forgotPassword, resetFlags} from '../../../redux/actions/authAction';
 
 //style
 import styles from './style';
 
 const ForgotPassword = ({navigation}) => {
-  const dispatch = useDispatch();
-
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const OnSave = () => {
+  const OnSave = async () => {
     if (!validator.email.regEx.test(String(email).toLowerCase()) || !email) {
-      return Utils.showErrorToast('Please add valid email');
+      return alert('Please add valid email');
     }
-    dispatch(forgotPassword({email: email.trim(), type: 'doctor'}));
+    setLoading(true);
+    try {
+      await auth().sendPasswordResetEmail(email.trim());
+      alert('Reset password link is send to your email 😊 !!');
+      setLoading(false);
+      onClickHandler();
+    } catch (error) {
+      alert(error);
+      setLoading(false);
+    }
   };
-
-  const {errors, flags} = useSelector(({auth}) => auth);
-
-  useEffect(() => {
-    const error = errors && errors.forgotPassword;
-    if (error) {
-      Utils.showErrorToast(error);
-      dispatch(resetFlags());
-    }
-    if (flags && flags.forgotPasswordSuccess) {
-      dispatch(resetFlags());
-      return navigation.navigate('SignIn');
-    }
-  }, [errors, flags]);
 
   const onClickHandler = () => {
     navigation.goBack();
@@ -64,6 +54,7 @@ const ForgotPassword = ({navigation}) => {
         </Text>
         <View style={styles.buttonView}>
           <Button
+            disabled={loading}
             onClick={OnSave}
             text="SUBMIT"
             textStyle={styles.buttonText}

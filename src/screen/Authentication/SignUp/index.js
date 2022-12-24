@@ -1,6 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {Text, TouchableOpacity, View, Image, Linking} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
+import React, {useState} from 'react';
+import {Text, TouchableOpacity, View, Image} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
@@ -9,31 +8,20 @@ import Input from '../../../components/Input';
 import Button from '../../../components/Button';
 import BaseScreen from '../../../components/BaseScreen';
 import validator from '../../../utils/validation';
-import TokenManager from '../../../utils/TokenManager';
-
-// //redux
-// import {register, resetFlags} from '../../../redux/actions/authAction';
 
 // //image
-// import {HandShake} from '../../../utils/images';
+import {HandShake} from '../../../assets/images';
 
 //style
 import styles from './style';
-import {HandShake} from '../../../assets/images';
 
 const SignUp = ({navigation}) => {
-  const dispatch = useDispatch();
-
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
-  const [phoneNo, setPhoneNo] = useState();
-  const [license, setLicense] = useState();
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
-  const [speciality, setSpeciality] = useState();
-  const [qualification, setQualification] = useState();
   const [showPassword, setShowPassword] = useState(true);
-  const [deviceToken, setDeviceToken] = useState();
+  const [loading, setLoading] = useState(false);
 
   const toggleShowPassword = () => setShowPassword(prev => !prev);
   const onRegister = () => {
@@ -47,7 +35,7 @@ const SignUp = ({navigation}) => {
     } else if (password?.length < 8 || !password) {
       return alert(validator.password.error);
     }
-
+    setLoading(true);
     auth()
       .createUserWithEmailAndPassword(email, password)
       .then(d => {
@@ -68,7 +56,7 @@ const SignUp = ({navigation}) => {
             });
         } catch (error) {
           alert(error);
-          console.log('error',error)
+          console.log('error', error);
         }
       })
       .catch(error => {
@@ -82,13 +70,10 @@ const SignUp = ({navigation}) => {
 
         console.error(error);
       });
+    setLoading(false);
   };
 
   const handleSignInClick = () => navigation.navigate('SignIn');
-
-  const openUrl = url => () => {
-    Linking.openURL(url);
-  };
 
   return (
     <BaseScreen>
@@ -140,9 +125,9 @@ const SignUp = ({navigation}) => {
 
       <View style={styles.buttonView}>
         <Button
+          disabled={loading}
           textStyle={styles.buttonText}
           onClick={onRegister}
-          // onClick={() => navigation.navigate('MyAvailability')}
           text="CONTINUE"
           style={styles.button}
         />

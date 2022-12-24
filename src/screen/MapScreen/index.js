@@ -1,27 +1,30 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import {View, Image} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import * as geolib from 'geolib';
 
 import BaseScreen from '../../components/BaseScreen';
-
-import {useNavigation} from '@react-navigation/native';
 
 import MapView, {
   PROVIDER_GOOGLE,
   enableLatestRenderer,
   Marker,
-  MapCircle,
+  Circle,
 } from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
-import Icon from 'react-native-vector-icons/Feather';
+
 enableLatestRenderer();
 
 import styles from './style';
 import {brandColors} from '../../components/Core/basicStyles';
+import dayjs from 'dayjs';
+import {onPressHandler} from '../../utils/hleperFuntion';
+import {useNavigation} from '@react-navigation/native';
+import {useDispatch} from 'react-redux';
 
 const MapScreen = () => {
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
   const mapRef = useRef(null);
   const markerRef = useRef(null);
   const [userList, setUserList] = useState([]);
@@ -35,9 +38,8 @@ const MapScreen = () => {
   const onMapReady = () => {
     getUserLocation();
   };
-  console.log('useasasdsaList', userList);
+
   const getUserLocation = () => {
-    console.log('getUserLocation::');
     Geolocation.getCurrentPosition(
       async position => {
         console.log('getUserLocation::position::', position);
@@ -59,7 +61,27 @@ const MapScreen = () => {
   };
 
   useEffect(() => {
-    const collectionRef = firestore().collection('Users');
+    const latitude = currentLocation.latitude;
+    const longitude = currentLocation.longitude;
+    const distance = 0.621371;
+
+    let lat = 0.0144927536231884;
+    let lon = 0.0181818181818182;
+
+    let lowerLat = latitude - lat * distance;
+    let lowerLon = longitude - lon * distance;
+
+    let greaterLat = latitude + lat * distance;
+    let greaterLon = longitude + lon * distance;
+
+    let lesserGeopoint = new firestore.GeoPoint(lowerLat, lowerLon);
+    let greaterGeopoint = new firestore.GeoPoint(greaterLat, greaterLon);
+
+    const collectionRef = firestore()
+      .collection('Users')
+      .where('liveLocation', '>', lesserGeopoint)
+      .where('liveLocation', '<', greaterGeopoint);
+
     const unsubscribe = collectionRef.onSnapshot(
       querySnapshot => {
         const filterData =
@@ -69,29 +91,20 @@ const MapScreen = () => {
         const updateData = filterData
           .map(doc => {
             const liveLocation = doc.data()?.liveLocation;
-            if (!liveLocation) return;
-            const isInRange = geolib?.isPointWithinRadius(
-              {
-                latitude: liveLocation?.latitude,
-                longitude: liveLocation?.longitude,
-              },
-              {
-                latitude: currentLocation?.latitude,
-                longitude: currentLocation?.longitude,
-              },
-              10000,
-            );
-            if (!isInRange) return;
             return {
-              name: `${doc.data()?.firstName}  ${doc.data()?.lastName}`,
-              image: 'https://i.pravatar.cc/',
-              _id: doc.data()?.userId,
               userId: doc.data()?.userId,
               liveLocation,
+              name: `${doc.data()?.firstName}  ${doc.data()?.lastName}`,
+              image: doc.data()?.image || 'https://i.pravatar.cc/',
+              message: doc.data()?.messages,
+              timeStemp: dayjs(
+                new Date(doc.data()?.timeStemp?.toDate()) || new Date(),
+              ).fromNow(),
+              _id: doc.data()?._id,
+              chatIdArray: doc.data()?.chatIdArray,
             };
           })
           ?.filter(i => i);
-        console.log('asdfweqwefghtgrfedwsqswdefrgtgrfedwsq', updateData);
         setUserList(updateData);
       },
       e => {
@@ -100,21 +113,8 @@ const MapScreen = () => {
     );
 
     return () => unsubscribe();
-  }, []);
+  }, [currentLocation]);
 
-  useEffect(() => {
-    const locationUpload = setInterval(() => {
-      const userCollection = firestore().collection('Users');
-      const userId = auth().currentUser.uid;
-      userCollection.doc(userId).update({
-        liveLocation: new firestore.GeoPoint(
-          currentLocation?.latitude,
-          currentLocation?.longitude,
-        ),
-      });
-    }, 15000);
-    return () => clearInterval(locationUpload);
-  }, []);
   useEffect(() => {
     getUserLocation();
   }, []);
@@ -139,6 +139,7 @@ const MapScreen = () => {
         rotateEnabled={true}>
         {userList.map(i => (
           <Marker
+            onPress={onPressHandler(i, navigation, dispatch)}
             key={`key_${i.liveLocation.longitude}_${i.liveLocation.latitude}`}
             coordinate={{
               latitude: i.liveLocation.latitude,
@@ -148,12 +149,14 @@ const MapScreen = () => {
               latitude: i.liveLocation.latitude,
               longitude: i.liveLocation.longitude,
             }}
+            pinColor="blue"
             centerOffset={{x: -18, y: -60}}
-            anchor={{x: 0.69, y: 1}}
-            pinColor={'blue'}
-          />
+            anchor={{x: 0.69, y: 1}}>
+            <View>
+              <Image source={{uri: i.image}} style={styles.toolKit} />
+            </View>
+          </Marker>
         ))}
-
         <Marker
           ref={markerRef}
           coordinate={currentLocation}
@@ -161,6 +164,14 @@ const MapScreen = () => {
           centerOffset={{x: -18, y: -60}}
           anchor={{x: 0.69, y: 1}}
           pinColor={'red'}
+        />
+        <Circle
+          center={currentLocation}
+          radius={1000}
+          fillColor={brandColors.greenLight}
+          strokeColor={brandColors.greenColor}
+          zIndex={2}
+          strokeWidth={3}
         />
       </MapView>
     </BaseScreen>

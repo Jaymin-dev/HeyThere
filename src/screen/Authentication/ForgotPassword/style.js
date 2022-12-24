@@ -52,9 +52,18 @@ const style = StyleSheet.create({
   },
   buttonText: {
     fontSize: fontScale(17),
+    color: brandColors.white,
   },
   buttonStyle: {
+    backgroundColor: brandColors.buttonColor,
     marginHorizontal: horizontalScale(20),
+    alignItems: 'center',
+    padding: horizontalScale(10),
+    borderRadius: 10,
+    shadowOffset: {height: horizontalScale(5), width: horizontalScale(5)},
+    shadowOpacity: 0.4,
+    shadowRadius: horizontalScale(5),
+    elevation: 10,
   },
   account: {
     alignItems: 'center',

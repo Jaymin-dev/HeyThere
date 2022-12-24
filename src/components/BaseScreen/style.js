@@ -25,11 +25,11 @@ const styles = StyleSheet.create({
     paddingBottom: verticalScale(5),
     flexDirection: 'row',
     justifyContent: 'space-between',
-    
   },
   headerText: {
     fontSize: fontScale(20),
     fontWeight: '600',
+    textTransform: 'capitalize',
   },
   icon: {
     fontSize: fontScale(20),

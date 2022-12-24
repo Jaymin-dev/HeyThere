@@ -1,26 +1,34 @@
 import React, {useEffect} from 'react';
-import {Provider} from 'react-redux';
-import {setupHttpConfig} from './utils/http';
-import {store} from './redux/store';
 import {PermissionsAndroid, Platform, StatusBar} from 'react-native';
-import {isIOS} from './components/Core/basicStyles';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
-import RootNavigator, {AuthenticatedUserProvider} from './SwitchNavigator';
 import {enableScreens} from 'react-native-screens';
+
+import {Provider} from 'react-redux';
+
+// Redux
+import {store} from './redux/store';
+
+// Basic Components
+import {setupHttpConfig} from './utils/http';
+import {brandColors, isIOS} from './components/Core/basicStyles';
+
+// Navigator
+import RootNavigator, {AuthenticatedUserProvider} from './SwitchNavigator';
 
 enableScreens();
 
-const App = props => {
+const App = () => {
   useEffect(() => {
     setupHttpConfig();
     if (Platform.OS === 'android') {
-      requestLocayionPermission().then(() => {
+      requestLocationPermission().then(() => {
         console.log('requested!');
       });
     }
   });
 
-  const requestLocayionPermission = async () => {
+  // Requested for Location permission
+  const requestLocationPermission = async () => {
     try {
       const granted = await PermissionsAndroid.requestMultiple([
         PermissionsAndroid.PERMISSIONS.CAMERA,
@@ -47,7 +55,7 @@ const App = props => {
         <StatusBar
           hidden
           translucent
-          backgroundColor={'#FFF'}
+          backgroundColor={brandColors.white}
           bar={isIOS ? 'dark-content' : 'light-content'}
         />
         <SafeAreaProvider>
