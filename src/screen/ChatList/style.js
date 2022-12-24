@@ -31,8 +31,10 @@ const styles = StyleSheet.create({
     marginRight: horizontalScale(10),
   },
   nameText: {
+    textTransform: 'capitalize',
     fontSize: fontScale(16),
     fontWeight: '600',
+    color: brandColors.black,
   },
   flexRow: {
     flexDirection: 'row',

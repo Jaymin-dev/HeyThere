@@ -34,9 +34,11 @@ const ChatList = () => {
               name: `${doc.data()?.firstName}  ${doc.data()?.lastName}`,
               image: doc.data()?.image || 'https://i.pravatar.cc/',
               message: doc.data()?.messages,
-              timeStemp: dayjs(
-                new Date(doc.data()?.timeStemp?.toDate()) || new Date(),
-              ).fromNow(),
+              timeStemp: doc.data()?.messages
+                ? dayjs(
+                    new Date(doc.data()?.timeStemp?.toDate() || 1),
+                  ).fromNow()
+                : '',
               _id: doc.data()?._id,
               userId: doc.data()?.userId,
               chatIdArray: doc.data()?.chatIdArray,
@@ -67,14 +69,16 @@ const ChatList = () => {
               <Text style={styles.messageText} numberOfLines={1}>
                 {message}
               </Text>
-              <Text
-                style={[
-                  styles.messageText,
-                  {color: brandColors.grayLighter, maxWidth: '100%'},
-                ]}>
-                {' · '}
-                {timeStemp}
-              </Text>
+              {!!message && (
+                <Text
+                  style={[
+                    styles.messageText,
+                    {color: brandColors.grayLighter, maxWidth: '100%'},
+                  ]}>
+                  {' · '}
+                  {timeStemp}
+                </Text>
+              )}
             </View>
           </View>
         </View>

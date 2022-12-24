@@ -30,9 +30,11 @@ const styles = StyleSheet.create({
     fontSize: fontScale(20),
     fontWeight: '600',
     textTransform: 'capitalize',
+    color: brandColors.black,
   },
   icon: {
     fontSize: fontScale(20),
+    color:brandColors.black
   },
 });
 export default styles;

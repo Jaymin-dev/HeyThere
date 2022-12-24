@@ -61,7 +61,7 @@ const SignIn = ({navigation}) => {
         </View>
 
         <Input
-          placeholder="Phone number or email"
+          placeholder="Email"
           onChangeText={setEmail}
           value={email}
           leftIconType="call"

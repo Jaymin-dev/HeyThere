@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {memo, useEffect, useRef, useState} from 'react';
 import {View, Image} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
@@ -38,8 +38,8 @@ const MapScreen = () => {
   const onMapReady = () => {
     getUserLocation();
   };
-
-  const getUserLocation = () => {
+  console.log('userList', userList);
+  const getUserLocation = (type = false) => {
     Geolocation.getCurrentPosition(
       async position => {
         console.log('getUserLocation::position::', position);
@@ -49,8 +49,17 @@ const MapScreen = () => {
           latitudeDelta: 0.0421,
           longitudeDelta: 0.0421,
         };
-        setPosition(currLocation);
-        mapRef.current.animateToRegion(currLocation);
+        const userCollection = firestore().collection('Users');
+        const userId = auth().currentUser.uid;
+        userCollection.doc(userId).update({
+          liveLocation: new firestore.GeoPoint(
+            currLocation?.latitude,
+            currLocation?.longitude,
+          ),
+        });
+        data = currLocation;
+        setPosition({...currLocation});
+        if (!type) mapRef.current.animateToRegion(currLocation);
       },
       async error => {
         // See error code charts below.
@@ -59,6 +68,12 @@ const MapScreen = () => {
       {enableHighAccuracy: true, timeout: 15000},
     );
   };
+  useEffect(() => {
+    const locationUpload = setInterval(() => {
+      getUserLocation(true);
+    }, 20000);
+    return () => clearInterval(locationUpload);
+  }, []);
 
   useEffect(() => {
     const latitude = currentLocation.latitude;
@@ -114,11 +129,29 @@ const MapScreen = () => {
 
     return () => unsubscribe();
   }, [currentLocation]);
-
-  useEffect(() => {
-    getUserLocation();
-  }, []);
-
+  const UserMarker = memo(() => {
+    return userList.map((i, index) => (
+      <Marker
+        onPress={onPressHandler(i, navigation, dispatch)}
+        key={`key_${i.liveLocation.longitude}_${i.liveLocation.latitude}`}
+        coordinate={{
+          latitude: i.liveLocation.latitude,
+          longitude: i.liveLocation.longitude,
+        }}
+        position={{
+          latitude: i.liveLocation.latitude,
+          longitude: i.liveLocation.longitude,
+        }}
+        pinColor="blue">
+        <View>
+          <Image
+            source={{uri: `https://i.pravatar.cc?img=${index}`}}
+            style={styles.toolKit}
+          />
+        </View>
+      </Marker>
+    ));
+  });
   return (
     <BaseScreen title={'MapScreen'} logout>
       <MapView
@@ -135,28 +168,7 @@ const MapScreen = () => {
         zoomEnabled={true}
         pitchEnabled={true}
         draggable={true}
-        loadingEnabled
         rotateEnabled={true}>
-        {userList.map(i => (
-          <Marker
-            onPress={onPressHandler(i, navigation, dispatch)}
-            key={`key_${i.liveLocation.longitude}_${i.liveLocation.latitude}`}
-            coordinate={{
-              latitude: i.liveLocation.latitude,
-              longitude: i.liveLocation.longitude,
-            }}
-            position={{
-              latitude: i.liveLocation.latitude,
-              longitude: i.liveLocation.longitude,
-            }}
-            pinColor="blue"
-            centerOffset={{x: -18, y: -60}}
-            anchor={{x: 0.69, y: 1}}>
-            <View>
-              <Image source={{uri: i.image}} style={styles.toolKit} />
-            </View>
-          </Marker>
-        ))}
         <Marker
           ref={markerRef}
           coordinate={currentLocation}
@@ -165,6 +177,7 @@ const MapScreen = () => {
           anchor={{x: 0.69, y: 1}}
           pinColor={'red'}
         />
+        <UserMarker />
         <Circle
           center={currentLocation}
           radius={1000}
